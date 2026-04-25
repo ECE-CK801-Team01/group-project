@@ -1,8 +1,16 @@
 # Smart Wastebin — Team 01
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi%205-red)
+![Broker](https://img.shields.io/badge/Broker-Mosquitto%20MQTT-purple)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 A smart waste bin system built on a Raspberry Pi 5 using a PIR motion 
 sensor to detect deposits, process events through an MQTT pipeline, 
 and log structured data for monitoring and analysis.
+
+Built as part of ECE CK801
 
 ## Team
 - ΔΡΑΚΟΣ ΕΜΜΑΝΟΥΗΛ-ΔΡΑΚΟΣ
