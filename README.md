@@ -1,12 +1,3 @@
-# ΟΜΑΔΑ 1 #
-
-## ΜΕΛΗ ## 
-<ul>
- <li>ΔΡΑΚΟΣ ΕΜΜΑΝΟΥΗΛ-ΔΡΑΚΟΣ</li>
- <li>ΖΙΑΚΑΣ ΝΙΚΟΛΑΟΣ</li>
- <li>ΣΑΜΑΡΑΣ ΘΕΟΦΑΝΗΣ</li>
-</ul>
-
 # Smart Wastebin — Team 01
 
 A smart waste bin system built on a Raspberry Pi 5 using a PIR motion 
