@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
-from code.pirlib.initerpeter import PirInterpreter
-from code.pirlib.sampler import PirSampler
-from code.pirlib.functions import utc_now_iso
+from pirlib.initerpeter import PirInterpreter
+from pirlib.sampler import PirSampler
+from pirlib.functions import utc_now_iso
 from time import time,sleep
 from uuid import uuid4
 import click,json,sys
