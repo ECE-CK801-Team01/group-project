@@ -113,8 +113,8 @@ def producer(device_id:str,
 # mqtts options
 @click.option("--broker",required = True, type = str, default = "localhost", help= "The broker to be used")
 @click.option("--port",required = True, type = int, default = 1883, help= "The device port")
-@click.option("--event-topic",required = True, type = str, default = "smartbin/+/+/events", help= "The client's event topic")
-@click.option("--status-topic",required = True, type = str, default = "smartbin/+/+/status", help= "The client's status topic")
+@click.option("--event-topic",required = True, type = str, default = "smartbin/bin-01/pir-01/events", help= "The client's event topic")
+@click.option("--status-topic",required = True, type = str, default = "smartbin/bin-01/pir-01/status", help= "The client's status topic")
 @click.option("--qos",required = True, type = int, default = 1, help= "Client QoS level")
 
 
