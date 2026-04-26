@@ -109,5 +109,89 @@ Stop and delete saved data:
 ```bash
 docker compose down -v
 ```
+---
+
+### Option B — Run directly on the Pi
+ 
+**1. Install Mosquitto:**
+```bash
+sudo apt-get install -y mosquitto mosquitto-clients
+sudo systemctl enable mosquitto && sudo systemctl start mosquitto
+```
+ 
+**2. Set up Python environment:**
+```bash
+cd group-project/src
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+ 
+**3. Start the consumer** (Terminal 1):
+```bash
+python3 consumer.py \
+  --broker localhost \
+  --port 1883 \
+  --event-topic "smartbin/+/+/events" \
+  --status-topic "smartbin/+/+/status" \
+  --qos 1 \
+  --out motion_pipeline.jsonl \
+  --verbose
+```
+ 
+**4. Start the producer** (Terminal 2):
+```bash
+python3 producer.py \
+  --device-id pir-01 \
+  --pin 17 \
+  --sample-interval 0.5 \
+  --cooldown 2 \
+  --min-high 0.3 \
+  --duration 6000 \
+  --broker localhost \
+  --port 1883 \
+  --event-topic smartbin/bin-01/pir-01/events \
+  --status-topic smartbin/bin-01/pir-01/status \
+  --qos 1 \
+  --verbose
+```
  
 ---
+ 
+## Data Format
+ 
+Each motion event is written as a single JSON-LD record on one line (JSONL):
+ 
+```json
+{
+  "@context": "models/context.jsonld",
+  "madeBySensor": "urn:dev:team-01:pir-01",
+  "WasteBin": "urn:dev:team-01:wastebin-01",
+  "Enviroment": "urn:env:team-01:site-01",
+  "event_time": "2026-04-25T10:15:30.123Z",
+  "ingest_time": "2026-04-25T10:15:30.125Z",
+  "device-id": "pir-01",
+  "event_type": "motion",
+  "motion_state": "detected",
+  "seq": 1,
+  "run-id": "abc123...",
+  "pipeline_latency_ms": 2.1
+}
+```
+ 
+Records use the [SOSA/SSN](https://www.w3.org/TR/vocab-ssn/) ontology for semantic interoperability.
+Custom ontology terms are defined in [`docs/ontology.md`](docs/ontology.md).
+ 
+---
+ 
+## Milestones
+ 
+| Milestone | Lab | Description |
+|---|---|---|
+| M1 | Lab 01 | Project foundation — repo, structure, documentation |
+| M2 | Lab 02 | PIR sensor integration — `pirlib`, JSONL event logger |
+| M3 | Lab 03 | Modular pipeline — producer/consumer separation |
+| M4 | Lab 04 | Containerization — Docker image and Compose stack |
+| M5 | Lab 05 | JSON-LD data modeling — semantic entity descriptions |
+| M6 | Lab 06 | MQTT messaging — decoupled pub/sub pipeline |
+ 
