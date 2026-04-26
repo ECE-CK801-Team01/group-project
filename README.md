@@ -53,7 +53,6 @@ group-project/
 │   ├── requirements.txt
 │   ├── .dockerignore
 │   ├── pirlib/
-│   │   ├── __init__.py
 │   │   ├── sampler.py           ← raw GPIO read via gpiozero
 │   │   ├── initerpeter.py       ← debounce + event interpretation
 │   │   └── functions.py         ← shared timestamp utilities
