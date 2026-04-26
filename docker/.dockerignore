@@ -1,0 +1,6 @@
+.bin 
+__pycache__/
+.venv/
+*.log
+.git/
+*.jsonl

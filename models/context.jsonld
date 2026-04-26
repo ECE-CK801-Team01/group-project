@@ -1,0 +1,54 @@
+{
+    "@context" : {
+        "@vocab" : "https://schema.org/",
+        "sosa" : "http://www.w3.org/ns/sosa/",
+        "ssn" : "http://www.w3.org/ns/ssn/",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "ssn-system": "http://www.w3.org/ns/ssn/systems/",
+        "schema": "http://schema.org/",
+        "qudt-unit-1-1": "http://qudt.org/vocab/unit#"
+    },
+    "madeBySensor" : {"@id" : "urn:dev:team-01:pir-01"} ,
+    "WasteBin" : {"@id" : "urn:dev:team-01:wastebin-01"} ,
+    "Enviroment" : {"@id" : "urn:env:team-01:site-01"} ,
+    
+    "event_time" : {
+        "@id" : "urn:dev:output:eventTime",
+        "@type" : "sosa:resultTime"
+    },
+    "ingest_time" : {
+        "@id" : "urn:dev:output:ingestTime",
+        "@type" : "xsd:timeDate",
+        "rdfs:label" : "The time the event got logged from our queue system"
+    },
+    "device-id" : {
+        "@id" : "urn:dev:output:deviceId",
+        "@type" : "xsd:string",
+        "rdfs:label" : "Unique identifier set for each different device"
+    },
+    "event_type" : {
+        "@id" : "urn:dev:output:eventType",
+        "@type" : "xsd:string",
+        "rdfs:label" : "The type of observation the sensor reacts to"
+    },
+    "motion_state" : {
+        "@id" : "urn:dev:output:motionState",
+        "@type" : "xsd:string",
+        "rdfs:label" : "Desctibes the eventType"
+    },
+    "seq" : {
+        "@id" : "urn:dev:output:sequenceNumber",
+        "@type" : "xsd:integer",
+        "rdfs:label" : ""
+    },
+    "run_id" : {
+        "@id" : "urn:dev:output:runId",
+        "@type" : "xsd:string",
+        "rdfs:label" : "Unique identifier set for each different system execution"
+    },
+    "pipeline_latency_ms" : {
+        "@id" : "urn:dev:output:pipeline_latency_ms",
+        "@type" : "xsd:float",
+        "rdfs:label" : "Difference between event and ingest time in ms"
+    }
+}

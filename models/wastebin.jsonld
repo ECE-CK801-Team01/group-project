@@ -1,0 +1,46 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "schema": "https://schema.org/",
+    "sosa": "http://www.w3.org/ns/sosa/",
+    "ssn": "http://www.w3.org/ns/ssn/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "team": "https://github.com/FanisSamaras/iotlab1_rasb1/blob/main/docs/ontology.md#",
+    "bot": "https://w3id.org/bot#",
+    "qudt-unit-1-1": "http://qudt.org/vocab/unit#"
+  },
+  "@id": "urn:dev:team-01:wastebin-01",
+  "@type": [
+    "sosa:FeatureOfInterest",
+    "bot:Element",
+    "team:WasteBin"
+  ],
+  "name": "Smart Wastebin 01",
+  "description": "Indoor wastebin instrumented with a PIR motion sensor and deployed in the lab.",
+  "rdfs:label": "Wastebin 01",
+  "color": "Gray",
+  "material": "Plastic",
+
+  "team:capacityLiters": {
+    "schema:value" : 0.48,
+    "schema:unitCode:qudt-unit-1-1" : "Liter"
+  },
+  "team:wasteType": "mixed",
+  "team:collectionZone": "zone-a",
+  "team:currentStatus": "active",
+  "team:heightCm": {
+    "schema:value" : 14.2,
+    "schema:unitCode:qudt-unit-1-1" : "Centimeter"
+  },
+  "team:diameterCm": {
+    "schema:value" : 6.8,
+    "schema:unitCode:qudt-unit-1-1" : "Centimeter"
+  },
+
+  "team:hasSensor": [
+    { "@id": "urn:dev:team-01:pir-01" }
+  ],
+  "team:locatedIn": {
+    "@id": "urn:env:team-01:space-01"
+  }
+}

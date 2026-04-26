@@ -1,0 +1,52 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "schema": "https://schema.org/",
+    "bot": "https://w3id.org/bot#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "urn:env:team-01:site-01",
+      "@type": ["bot:Site", "schema:Place"],
+      "name": "University Campus Site",
+      "description": "The campus site containing the building where the smart wastebin is deployed.",
+      "bot:hasBuilding": {
+        "@id": "urn:env:team-01:building-01"
+      }
+    },
+    {
+      "@id": "urn:env:team-01:building-01",
+      "@type": ["bot:Building", "schema:Place"],
+      "name": "EE Building",
+      "description": "The building containing the lab room where the wastebin and PIR sensor are installed.",
+      "containedInPlace": {
+        "@id": "urn:env:team-01:site-01"
+      },
+      "bot:hasStorey": {
+        "@id": "urn:env:team-01:storey-01"
+      }
+    },
+    {
+      "@id": "urn:env:team-01:storey-01",
+      "@type": "bot:Storey",
+      "name": "Ground Floor",
+      "description": "The storey that contains the lab deployment space.",
+      "bot:hasSpace": {
+        "@id": "urn:env:team-01:space-01"
+      }
+    },
+    {
+      "@id": "urn:env:team-01:space-01",
+      "@type": ["bot:Space", "schema:Place"],
+      "name": "KYPES",
+      "description": "Indoor lab room where Smart Wastebin 01 and its PIR sensor are deployed.",
+      "containedInPlace": {
+        "@id": "urn:env:team-01:building-01"
+      },
+      "bot:containsElement": {
+        "@id": "urn:dev:team-01:wastebin-01"
+      }
+    }
+  ]
+}

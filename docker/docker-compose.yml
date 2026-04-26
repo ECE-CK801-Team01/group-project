@@ -1,0 +1,75 @@
+# Usage: docker compose up --build
+#
+# To run only broker + consumer (without GPIO hardware):
+#   docker compose up broker consumer
+# producer requires physical GPIO access (Raspberry Pi only)
+
+services:
+
+  broker:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    networks:
+      - mqtt-net
+    restart: unless-stopped
+
+  producer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    devices:
+      - "/dev/gpiomem0:/dev/gpiomem"
+      - "/dev/gpiochip0:/dev/gpiochip0"
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    mem_limit: 128m
+    cpus: 0.5
+    restart: on-failure
+    command: >
+      python3 producer.py
+        --device-id pir-01
+        --pin 17
+        --sample-interval 0.5
+        --cooldown 2
+        --min-high 0.3
+        --duration 6000
+        --broker broker
+        --port 1883
+        --event-topic smartbin/bin-01/pir-01/events
+        --status-topic smartbin/bin-01/pir-01/status
+        --qos 1
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    volumes:
+      - pipeline-data:/data
+    mem_limit: 128m
+    cpus: 0.5
+    restart: on-failure
+    command: >
+      python3 consumer.py
+        --broker broker
+        --port 1883
+        --event-topic smartbin/+/+/events
+        --status-topic smartbin/+/+/status
+        --qos 1
+        --out /data/motion_pipeline.jsonl
+
+networks:
+  mqtt-net:
+    driver: bridge
+
+volumes:
+  pipeline-data:
