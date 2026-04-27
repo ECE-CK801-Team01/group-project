@@ -38,3 +38,5 @@ def main(broker, port, qos, out):
     client.on_connect = on_connect
     client.connect(host=broker,port=port)
 
+if __name__ == "__main__":
+    main()
