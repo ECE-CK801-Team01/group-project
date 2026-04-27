@@ -1,5 +1,6 @@
 import click
 import paho.mqtt.client as mqtt
+from pirlib.functions import utc_now_iso
 
 class Data():
     def __init__(self,  omni_topic:str, qos:int, out:str):
@@ -18,7 +19,7 @@ def on_connect(client, userdata:Data, flags, reason_code, properties):
 def on_message(client, userdata:Data, message):
     message_list = message.topic.split("/")
     _, bin_num , sensor_num , event_type = message_list
-    output = f"Bin:{bin_num} sensor:{sensor_num} event_type:{event_type}\n"
+    output = f"Bin:{bin_num} sensor:{sensor_num} time:{utc_now_iso()} event_type:{event_type} \n"
     print(output)
     with open(userdata.out,"a") as f:
         f.write(output)
