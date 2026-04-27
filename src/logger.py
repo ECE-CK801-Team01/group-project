@@ -38,5 +38,11 @@ def main(broker, port, qos, out):
     client.on_connect = on_connect
     client.connect(host=broker,port=port)
 
+
+    try:
+        client.loop_forever()
+    except KeyboardInterrupt:
+        client.disconnect()
+
 if __name__ == "__main__":
     main()
