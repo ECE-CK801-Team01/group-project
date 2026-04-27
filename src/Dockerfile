@@ -6,3 +6,4 @@ COPY pirlib/ pirlib/
 COPY models/ models/
 COPY consumer.py .
 COPY producer.py .
+COPY logger.py .
