@@ -18,7 +18,7 @@ def on_connect(client, userdata:Data, flags, reason_code, properties):
 def on_message(client, userdata:Data, message):
     message_list = message.topic.split("/")
     _, bin_num , sensor_num , event_type = message_list
-    output = f"Bin:{bin_num} sensor:{sensor_num} event type:{event_type}"
+    output = f"Bin:{bin_num} sensor:{sensor_num} event type:{event_type}\n"
     print(output)
     with open(userdata.out,"a") as f:
         f.write(output)
