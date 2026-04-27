@@ -31,7 +31,7 @@ def on_message(client, userdata:Data, message):
 @click.option("--out", required=True, type=str, help="Output file name")
 
 def main(broker, port, qos, out):
-    omni_topic = "smartbin/#"
+    omni_topic = "smartbin/+/+/#"
     userdata = Data(omni_topic=omni_topic,qos=qos,out=out)
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2,userdata=userdata)
     client.on_message = on_message
