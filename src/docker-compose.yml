@@ -55,6 +55,7 @@ services:
       - broker
     volumes:
       - pipeline-data:/data
+      - ./data:/data
     mem_limit: 128m
     cpus: 0.5
     restart: on-failure
@@ -66,6 +67,24 @@ services:
         --status-topic smartbin/+/+/status
         --qos 1
         --out /data/motion_pipeline.jsonl
+
+  logger:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt.net
+    depends_on:
+      - broker
+    volumes:
+      - ./data:/data
+    restart: on-failure
+    command: >
+      python3 logger.py
+        --broker broker
+        --port 1883
+        --qos 1 
+        --out /data/logger.log
 
 networks:
   mqtt-net:
