@@ -2,7 +2,7 @@ import click
 import paho.mqtt.client as mqtt
 
 class Data():
-    def __init__(self,  omni_topic:str, qos:int, out:str, verbose:bool):
+    def __init__(self,  omni_topic:str, qos:int, out:str):
         self.omni_topic = omni_topic
         self.qos = qos
         self.out = out
