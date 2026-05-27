@@ -1,13 +1,15 @@
 import paho.mqtt.client as mqtt
 from pirlib.initerpeter import PirInterpreter
 from pirlib.sampler import PirSampler
+from pirlib.sim_sampler import SimSampler
 from pirlib.functions import utc_now_iso
 from time import time,sleep
 from uuid import uuid4
 import click,json,sys
 
 class Data():
-    def __init__(self, event_topic:str, status_topic:str, ha_config_topic: str, ha_event_topic: str, qos:int):
+    def __init__(self, device_id: str, event_topic:str, status_topic:str, ha_config_topic: str, ha_event_topic: str, qos:int):
+        self.device_id = device_id
         self.event_topic = event_topic
         self.status_topic = status_topic
         self.ha_config_topic = ha_config_topic
@@ -21,7 +23,7 @@ def on_connect(client, userdata:Data, flags, reason_code, properties):
     if reason_code.is_failure:
         print(f"[Producer] Failed to connect: {reason_code}. Retrying connection")
     else:
-        pub_disc_info(client, userdata)
+        pub_disc_info(client, userdata, userdata.device_id)
         print(f"[Producer] connected. Setting status to online...")
         client.publish(userdata.status_topic, json.dumps({"status": "online"}),retain=True,qos = userdata.qos)
         client.publish(userdata.ha_event_topic, "clear", retain=True, qos=userdata.qos)
@@ -35,18 +37,18 @@ def on_publish(client, userdata, m_id, reason_code, properties):
         userdata.event_mids.remove(m_id)
         userdata.metrics["acknowledged"] += 1
 
-def pub_disc_info(client, userdata: Data):
+def pub_disc_info(client, userdata: Data, device_id: str):
     sensor_conf_obj = {
         "name": "PIR Motion Sensor",
         "state_topic": userdata.ha_event_topic,
         "payload_on": "detected",
         "payload_off": "clear",
         "device_class": "motion",
-        "off_delay": 15,
-        "unique_id": "pir_01_motion",
+        "off_delay": 8,
+        "unique_id": f"{device_id}_motion",
         "device": {
-            "identifiers": ["pir-01"],
-            "name": "PIR Sensor 01",
+            "identifiers": [device_id],
+            "name": f"PIR Sensor {device_id}",
             "model": "HC-SR501",
             "manufacturer": "Generic"
         }
@@ -88,8 +90,8 @@ def producer(device_id:str,
                 seq += 1
                 record = {
                             "@context" : "models/context.jsonld",
-                            "madeBySensor" : "urn:dev:team-01:pir-01",
-                            "WasteBin" : "urn:dev:team-01:wastebin-01",
+                            "madeBySensor" : f"urn:dev:team-01:{device_id}",
+                            "WasteBin" : f"urn:dev:team-01:{device_id.replace('pir', 'wastebin')}",
                             "Enviroment" : "urn:env:team-01:site-01",
                             "event_time" : utc_now_iso(),
                             "ingest_time" : "",
@@ -138,6 +140,8 @@ def producer(device_id:str,
 @click.option("--sample-interval", type = float,default= 5, help = "Time between measurments")
 @click.option("--cooldown", type = float,default=3.0, help = "Senson's debounce time")
 @click.option("--min-high", type = float, default=0.2, help = "Minimun acceptable sensor value")
+@click.option("--simulate", is_flag=True, default=False, help="Use a software sim sampler instead of a real PIR (no GPIO).")
+@click.option("--activity-scale", type=float, default=1.0, help="Activity multiplier for --simulate. 1.0 = normal, 2.0 = busy, 0.5 = quiet.")
 @click.option("--duration", type = float,default = 30.0, help = "Duration of the session")
 @click.option("--verbose", is_flag = True, default = False, help = "whether or not to print output in the terminal")
 # mqtts options
@@ -150,12 +154,18 @@ def producer(device_id:str,
 @click.option("--ha-config-topic", type=str, default="homeassistant/binary_sensor/pir-01/config", help="Home Assistant MQTT discovery config topic")
 @click.option("--ha-event-topic", type=str, default="homeassistant/binary_sensor/pir-01/events", help="Home Assistant PIR state topic")
 
-def main(device_id, pin, sample_interval, cooldown, min_high, duration, verbose,
+def main(device_id, pin, sample_interval, cooldown, min_high, simulate, activity_scale,
+         duration, verbose,
          broker, port, event_topic, status_topic, qos, ha_config_topic, ha_event_topic):
     
-    sampler = PirSampler(pin)
+    if simulate:
+        sampler = SimSampler(pin=pin, activity_scale=activity_scale,
+                             sample_interval_s=sample_interval)
+        print(f"[Producer] SIMULATE mode — no GPIO. activity_scale={activity_scale}")
+    else:
+        sampler = PirSampler(pin)
     interp = PirInterpreter(cooldown_s=cooldown,min_high_s=min_high)
-    userdata = Data(event_topic=event_topic, status_topic=status_topic, ha_config_topic=ha_config_topic, ha_event_topic=ha_event_topic, qos=qos)
+    userdata = Data(device_id=device_id, event_topic=event_topic, status_topic=status_topic, ha_config_topic=ha_config_topic, ha_event_topic=ha_event_topic, qos=qos)
 
     float_inputs = {"sample_interval":sample_interval,
                     "cooldown":cooldown,
