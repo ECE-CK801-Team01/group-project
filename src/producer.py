@@ -42,6 +42,7 @@ def pub_disc_info(client, userdata: Data):
         "payload_on": "detected",
         "payload_off": "clear",
         "device_class": "motion",
+        "off_delay": 15,
         "unique_id": "pir_01_motion",
         "device": {
             "identifiers": ["pir-01"],
@@ -72,7 +73,7 @@ def producer(device_id:str,
     run_id = str(uuid4())
     seq = 0
     start_time = time()
-    ha_state = "clear"
+
     try:
         client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, userdata=userdata)
         client.on_connect = on_connect
@@ -102,16 +103,11 @@ def producer(device_id:str,
                 if verbose:              
                     print(f"[Producer] Publishing seq={seq} at {record['event_time']}")
 
-                if ha_state != "detected":
-                    client.publish(userdata.ha_event_topic, "detected", qos=userdata.qos, retain=True)
-                    ha_state = "detected"
+                client.publish(userdata.ha_event_topic, "detected", qos=userdata.qos, retain=True)
                 info = client.publish(userdata.event_topic, json.dumps(record), userdata.qos)
                 userdata.event_mids.add(info.mid)
                 userdata.metrics["produced"] += 1
-            sleep(sample_interval)
-            if not last_sample and ha_state == "detected":
-                client.publish(userdata.ha_event_topic, "clear", qos=userdata.qos, retain=True)
-                ha_state = "clear"
+            sleep(sample_interval)            
  
         print(f"[Producer] Duration ({duration}s) reached — stopping.")
  
