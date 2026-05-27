@@ -7,9 +7,11 @@ from uuid import uuid4
 import click,json,sys
 
 class Data():
-    def __init__(self, event_topic:str, status_topic:str, qos:int):
+    def __init__(self, event_topic:str, status_topic:str, ha_config_topic: str, ha_event_topic: str, qos:int):
         self.event_topic = event_topic
         self.status_topic = status_topic
+        self.ha_config_topic = ha_config_topic
+        self.ha_event_topic = ha_event_topic
         self.qos = qos
         self.metrics = {"produced": 0, "acknowledged": 0}
         self.event_mids = set()
@@ -17,11 +19,13 @@ class Data():
 
 def on_connect(client, userdata:Data, flags, reason_code, properties):
     if reason_code.is_failure:
-        print(f"[Producer] Failled to connect: {reason_code}. Retrying connection")
+        print(f"[Producer] Failed to connect: {reason_code}. Retrying connection")
     else:
+        pub_disc_info(client, userdata)
         print(f"[Producer] connected. Setting status to online...")
         client.publish(userdata.status_topic, json.dumps({"status": "online"}),retain=True,qos = userdata.qos)
-
+        client.publish(userdata.ha_event_topic, "clear", retain=True, qos=userdata.qos)
+        
 def on_publish(client, userdata, m_id, reason_code, properties):
     if reason_code.is_failure:
         print(f"[Producer] Broker rejected message (mid={m_id}): {reason_code}",
@@ -30,6 +34,29 @@ def on_publish(client, userdata, m_id, reason_code, properties):
         print(f"Publishing message : {m_id} success")
         userdata.event_mids.remove(m_id)
         userdata.metrics["acknowledged"] += 1
+
+def pub_disc_info(client, userdata: Data):
+    sensor_conf_obj = {
+        "name": "PIR Motion Sensor",
+        "state_topic": userdata.ha_event_topic,
+        "payload_on": "detected",
+        "payload_off": "clear",
+        "device_class": "motion",
+        "unique_id": "pir_01_motion",
+        "device": {
+            "identifiers": ["pir-01"],
+            "name": "PIR Sensor 01",
+            "model": "HC-SR501",
+            "manufacturer": "Generic"
+        }
+    }
+
+    client.publish(
+        userdata.ha_config_topic,
+        json.dumps(sensor_conf_obj),
+        retain=True,
+        qos=userdata.qos,
+    )
 
 def producer(device_id:str,
              sampler:PirSampler,
@@ -74,10 +101,13 @@ def producer(device_id:str,
                             }
                 if verbose:              
                     print(f"[Producer] Publishing seq={seq} at {record['event_time']}")
+
+                client.publish(userdata.ha_event_topic, "detected", qos=userdata.qos, retain=True)
                 info = client.publish(userdata.event_topic, json.dumps(record), userdata.qos)
                 userdata.event_mids.add(info.mid)
                 userdata.metrics["produced"] += 1
             sleep(sample_interval)
+            client.publish(userdata.ha_event_topic, "clear", qos=userdata.qos, retain=True)
  
         print(f"[Producer] Duration ({duration}s) reached — stopping.")
  
@@ -113,17 +143,19 @@ def producer(device_id:str,
 # mqtts options
 @click.option("--broker",required = True, type = str, default = "localhost", help= "The broker to be used")
 @click.option("--port",required = True, type = int, default = 1883, help= "The device port")
-@click.option("--event-topic",required = True, type = str, default = "smartbin/bin-01/pir-01/events", help= "The client's event topic")
-@click.option("--status-topic",required = True, type = str, default = "smartbin/bin-01/pir-01/status", help= "The client's status topic")
+@click.option("--event-topic", type=str, default="smartbin/bin-01/pir-01/events", help="The client's event topic")
+@click.option("--status-topic", type=str, default="smartbin/bin-01/pir-01/status", help="The client's status topic")
 @click.option("--qos",required = True, type = int, default = 1, help= "Client QoS level")
+# home assistant options
+@click.option("--ha-config-topic", type=str, default="homeassistant/binary_sensor/pir-01/config", help="Home Assistant MQTT discovery config topic")
+@click.option("--ha-event-topic", type=str, default="homeassistant/binary_sensor/pir-01/events", help="Home Assistant PIR state topic")
 
-
-def main(device_id,pin,sample_interval,cooldown,min_high,duration,verbose,
-         broker, port, event_topic, status_topic, qos):
+def main(device_id, pin, sample_interval, cooldown, min_high, duration, verbose,
+         broker, port, event_topic, status_topic, qos, ha_config_topic, ha_event_topic):
     
     sampler = PirSampler(pin)
     interp = PirInterpreter(cooldown_s=cooldown,min_high_s=min_high)
-    userdata = Data(event_topic=event_topic, status_topic=status_topic, qos=qos)
+    userdata = Data(event_topic=event_topic, status_topic=status_topic, ha_config_topic=ha_config_topic, ha_event_topic=ha_event_topic, qos=qos)
 
     float_inputs = {"sample_interval":sample_interval,
                     "cooldown":cooldown,
