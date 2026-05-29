@@ -293,12 +293,15 @@ def on_message(client,userdata,msg):
 
 wastebin_api.on_message = on_message
 
+broker_host = os.environ.get("MQTT_BROKER", "localhost")
+broker_port = int(os.environ.get("MQTT_PORT", "1883"))
 try:
-    wastebin_api.connect("localhost", port=1883, keepalive=60)
+    wastebin_api.connect(broker_host, port=broker_port, keepalive=60)
     wastebin_api.subscribe("smartbin/#", qos=1)
     wastebin_api.loop_start()
+    print(f"[API] Connected to MQTT broker at {broker_host}:{broker_port}")
 except Exception as e:
-    print(f"[API] No broker available: {e} — MQTT endpoints disabled")
+    print(f"[API] No broker available at {broker_host}:{broker_port}: {e} — MQTT endpoints disabled")
 
 mqtt_ns = api.namespace("mqtt",description = "MQTT broker interaction")
 
@@ -388,5 +391,6 @@ class BinEmptied(Resource):
         wastebin_api.publish(f"smartbin/{bin_id}/status",json.dumps({"state":"emptied","emptied_at":record["emptied_at"]}),qos=1,retain=True)
 
         return record,201
+    
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0",port=5000)

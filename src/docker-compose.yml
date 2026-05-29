@@ -204,6 +204,28 @@ services:
         --port 1883
         --interval 15
 
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    ports:
+      - "5000:5000"
+    volumes:
+      - pipeline-data:/data
+    environment:
+      - MQTT_BROKER=broker
+      - MQTT_PORT=1883
+    mem_limit: 128m
+    cpus: 0.5
+    restart: unless-stopped
+    command: python3 -u api.py      
+
+
 networks:
   mqtt-net:
     driver: bridge
