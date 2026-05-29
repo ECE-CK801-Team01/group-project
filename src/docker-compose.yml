@@ -26,7 +26,7 @@ services:
     cpus: 0.5
     restart: unless-stopped
     command: >
-      python3 producer.py
+      python3 -u producer.py
         --device-id pir-01
         --pin 17
         --sample-interval 0.5
@@ -54,7 +54,7 @@ services:
     cpus: 0.25
     restart: unless-stopped
     command: >
-      python3 producer.py
+      python3 -u producer.py
         --device-id pir-02
         --simulate
         --activity-scale 20
@@ -72,7 +72,7 @@ services:
         --ha-config-topic homeassistant/binary_sensor/pir-02/config
         --ha-event-topic homeassistant/binary_sensor/pir-02/events
 
-  
+
   producer-bin-03:
     build:
       context: .
@@ -85,7 +85,7 @@ services:
     cpus: 0.25
     restart: unless-stopped
     command: >
-      python3 producer.py
+      python3 -u producer.py
         --device-id pir-03
         --simulate
         --activity-scale 10
@@ -118,16 +118,17 @@ services:
     cpus: 0.5
     restart: unless-stopped
     command: >
-      python3 consumer.py
+      python3 -u consumer.py
         --broker broker
         --port 1883
         --event-topic smartbin/+/+/events
         --status-topic smartbin/+/+/status
         --qos 1
-        --out /data/motion_pipeline.jsonl
+        --out /data/motion_events.jsonl
+        --verbose
 
   # logger:
-  #   build: 
+  #   build:
   #     context: .
   #     dockerfile: Dockerfile
   #   networks:
@@ -142,10 +143,10 @@ services:
   #     python3 logger.py
   #       --broker broker
   #       --port 1883
-  #       --qos 1 
+  #       --qos 1
   #       --out /data/logger.log
 
-  
+
   rules-sensor:
     build:
       context: .
@@ -158,7 +159,7 @@ services:
     cpus: 0.25
     restart: unless-stopped
     command: >
-      python3 virtual_sensor_rules.py
+      python3 -u virtual_sensor_rules.py
         --broker broker
         --port 1883
         --subscribe-topic smartbin/+/+/events
@@ -178,7 +179,7 @@ services:
     cpus: 0.25
     restart: unless-stopped
     command: >
-      python3 virtual_sensor_ml.py
+      python3 -u virtual_sensor_ml.py
         --broker broker
         --port 1883
         --publish-topic smartbin/bin-01/prediction
@@ -198,7 +199,7 @@ services:
     cpus: 0.25
     restart: unless-stopped
     command: >
-      python3 virtual_sensor_combiner.py
+      python3 -u virtual_sensor_combiner.py
         --broker broker
         --port 1883
         --interval 15
@@ -209,3 +210,4 @@ networks:
 
 volumes:
   pipeline-data:
+  
