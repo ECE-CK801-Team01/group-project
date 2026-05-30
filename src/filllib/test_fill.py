@@ -1,11 +1,11 @@
 from time import sleep
-from smapler import UltrasonicSampler
-from initerpeter import FillInterpreter
+from smapler import Ultrasonic_Sampler
+from initerpeter import Fill_interpreter
 
 
-sampler = UltrasonicSampler(trig_pin=23, echo_pin=24)
+sampler = Ultrasonic_Sampler(trig_pin=23, echo_pin=24)
 
-interp = FillInterpreter(
+interp = Fill_interpreter(
     empty_distance_cm=40.0,
     full_distance_cm=8.0,
     smoothing_window=5,
