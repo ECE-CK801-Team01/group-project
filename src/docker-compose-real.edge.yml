@@ -32,3 +32,6 @@ services:
           --ha-config-topic homeassistant/binary_sensor/pir-01/config
           --ha-event-topic homeassistant/binary_sensor/pir-01/events
     
+    networks:
+      mqtt-net:
+      external: true
