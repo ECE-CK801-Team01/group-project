@@ -14,7 +14,7 @@ interp = Fill_interpreter(
 
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.connect("localhost", 1883)
-client.loop_start()
+client.loop_forever()
 distance = sampler.read()
 
 if distance is None:
@@ -31,4 +31,3 @@ sleep(1)
 client.publish(topic="smartbin",payload=event["fill_percent"])
 
 sampler.close()
-client.loop_stop()
