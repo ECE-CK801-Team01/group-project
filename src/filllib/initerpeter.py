@@ -1,7 +1,6 @@
 from collections import deque
 from statistics import median
 from typing import Optional
-from smapler import Ultrasonic_Sampler
 
 class Fill_interpreter(object):
     def __init__(self,empty_distance_cm:float,full_distance_cm:float,smoothing_window:int = 5, change_threshold_percent: float = 5.0):
