@@ -5,6 +5,7 @@ from pirlib.sim_sampler import SimSampler
 from pirlib.functions import utc_now_iso
 from time import time,sleep
 from uuid import uuid4
+import signal
 import click,json,sys
 
 class Data():
@@ -164,6 +165,10 @@ def main(device_id, pin, sample_interval, cooldown, min_high, simulate, activity
          duration, verbose,
          broker, port, event_topic, status_topic, qos, ha_config_topic, ha_event_topic):
     
+    def _sigterm(signum, frame):
+        raise KeyboardInterrupt()
+
+    signal.signal(signal.SIGTERM, _sigterm)
     if simulate:
         sampler = SimSampler(pin=pin, activity_scale=activity_scale,
                              sample_interval_s=sample_interval)

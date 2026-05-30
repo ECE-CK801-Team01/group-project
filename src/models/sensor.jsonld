@@ -10,26 +10,142 @@
     },
     "@graph":[
     {
-        "@id" : "urn:dev:team-01:rab-pi-01",
-        "@type" : "ssn-System",
-        "ssn:hasSubSystem" : {"@id" : "urn:dev:team-01:pir-01"},
-        "rdfs:label" : "Raspberry Pi 5 running a debian based linux distro connected with the sensor using its GPIO pins, speciffically pin 17"
+      "@id": "urn:dev:team-01:rab-pi-01",
+      "@type": "ssn:System",
+      "ssn:hasSubSystem": {
+        "@id": "urn:dev:team-01:pir-01"
+      },
+      "rdfs:label": "Raspberry Pi 5 connected to PIR sensor 01 on GPIO 17"
     },
     {
-        "@id" : "urn:dev:team-01:pir-01",
-        "@type" : ["sosa:Sensor","ssn:System"],
-        "sosa:observes" : {"@id" : "urn:obs:property"},
-        "rdfs:label" : "PIR HC-SR501",
-        "ssn-system:hasSystemCapability": {"@id" : "urn:system:capabilities"},
-        "ssn-system:hasOperatingRange" : {"@id" : "urn:system:opRange"}
+      "@id": "urn:dev:team-01:rab-pi-02",
+      "@type": "ssn:System",
+      "ssn:hasSubSystem": {
+        "@id": "urn:dev:team-01:pir-02"
+      },
+      "rdfs:label": "Raspberry Pi 5 connected to PIR sensor 02 on GPIO 17"
     },
     {
-        "@id" : "urn:obs:motion",
-        "@type" : "sosa:Observation",
-        "sosa:madeBySensor" : {"@id":"urn:dev:team-01:pir-01"},
-        "sosa:observedProperty": {"@id" : "urn:obs:property"},
-        "sosa:hasFeatureOfInterest" : {"@id":"urn:dev:team-01:wastebin-01"},
-        "rdfs:label" : "It observes motion"
+      "@id": "urn:dev:team-01:rab-pi-03",
+      "@type": "ssn:System",
+      "ssn:hasSubSystem": {
+        "@id": "urn:dev:team-01:pir-03"
+      },
+      "rdfs:label": "Raspberry Pi 5 connected to PIR sensor 03 on GPIO 17"
+    },
+
+    {
+      "@id": "urn:dev:team-01:pir-01",
+      "@type": ["sosa:Sensor", "ssn:System"],
+      "sosa:observes": {
+        "@id": "urn:obs:property"
+      },
+      "rdfs:label": "PIR HC-SR501",
+      "ssn-system:hasSystemCapability": {
+        "@id": "urn:system:capabilities"
+      },
+      "ssn-system:hasOperatingRange": {
+        "@id": "urn:system:opRange"
+      }
+    },
+    {
+      "@id": "urn:dev:team-01:pir-02",
+      "@type": ["sosa:Sensor", "ssn:System"],
+      "sosa:observes": {
+        "@id": "urn:obs:property"
+      },
+      "rdfs:label": "PIR HC-SR501",
+      "ssn-system:hasSystemCapability": {
+        "@id": "urn:system:capabilities"
+      },
+      "ssn-system:hasOperatingRange": {
+        "@id": "urn:system:opRange"
+      }
+    },
+    {
+      "@id": "urn:dev:team-01:pir-03",
+      "@type": ["sosa:Sensor", "ssn:System"],
+      "sosa:observes": {
+        "@id": "urn:obs:property"
+      },
+      "rdfs:label": "PIR HC-SR501",
+      "ssn-system:hasSystemCapability": {
+        "@id": "urn:system:capabilities"
+      },
+      "ssn-system:hasOperatingRange": {
+        "@id": "urn:system:opRange"
+      }
+    },
+
+    {
+      "@id": "urn:obs:motion-01",
+      "@type": "sosa:Observation",
+      "sosa:madeBySensor": {
+        "@id": "urn:dev:team-01:pir-01"
+      },
+      "sosa:observedProperty": {
+        "@id": "urn:obs:property"
+      },
+      "sosa:hasFeatureOfInterest": {
+        "@id": "urn:dev:team-01:wastebin-01"
+      }
+    },
+    {
+      "@id": "urn:obs:motion-02",
+      "@type": "sosa:Observation",
+      "sosa:madeBySensor": {
+        "@id": "urn:dev:team-01:pir-02"
+      },
+      "sosa:observedProperty": {
+        "@id": "urn:obs:property"
+      },
+      "sosa:hasFeatureOfInterest": {
+        "@id": "urn:dev:team-01:wastebin-02"
+      }
+    },
+    {
+      "@id": "urn:obs:motion-03",
+      "@type": "sosa:Observation",
+      "sosa:madeBySensor": {
+        "@id": "urn:dev:team-01:pir-03"
+      },
+      "sosa:observedProperty": {
+        "@id": "urn:obs:property"
+      },
+      "sosa:hasFeatureOfInterest": {
+        "@id": "urn:dev:team-01:wastebin-03"
+      }
+    },
+
+    {
+      "@id": "urn:team:deployment-01",
+      "@type": "team:deployment",
+      "deployment:mountedOn": {
+        "@id": "urn:dev:team-01:wastebin-01"
+      },
+      "deployment:deployedIn": {
+        "@id": "urn:env:team-01:site-01"
+      }
+    },
+    {
+      "@id": "urn:team:deployment-02",
+      "@type": "team:deployment",
+      "deployment:mountedOn": {
+        "@id": "urn:dev:team-01:wastebin-02"
+      },
+      "deployment:deployedIn": {
+        "@id": "urn:env:team-01:site-01"
+      }
+    },
+    {
+      "@id": "urn:team:deployment-03",
+      "@type": "team:deployment",
+      "deployment:mountedOn": {
+        "@id": "urn:dev:team-01:wastebin-03"
+      },
+      "deployment:deployedIn": {
+        "@id": "urn:env:team-01:site-01"
+      }
     },
     {
         "@id" : "urn:obs:property",
@@ -89,12 +205,6 @@
         "schema:minValue" : 5,
         "schema:maxValue" : 20,
         "schema:unitCode":"qudt-unit-1-1:Volt"
-    },
-    {
-        "@id" : "urn:team:deployment",
-        "@type" : "tean:deployment",
-        "deployment:mountedOn" : {"@id" : "urn:dev:team-01:wastebin-01"},
-        "deployment:deployedIn" : {"@id" : "urn:env:team-01:site-01"}
     },
     {
         "@id" : "urn:team:status",
