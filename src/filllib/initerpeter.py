@@ -34,11 +34,11 @@ class Fill_interpreter(object):
         return fill
 
     def classify(self, fill_percent: float) -> str:
-        if fill_percent < 10:
+        if fill_percent < 9:
             return "empty"
-        if fill_percent < 50:
+        if fill_percent < 33:
             return "low"
-        if fill_percent < 75:
+        if fill_percent < 67:
             return "medium"
         if fill_percent < 90:
             return "high"
