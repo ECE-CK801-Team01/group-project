@@ -6,8 +6,8 @@ from initerpeter import Fill_interpreter
 sampler = Ultrasonic_Sampler(trig_pin=23, echo_pin=24)
 
 interp = Fill_interpreter(
-    empty_distance_cm=40.0,
-    full_distance_cm=8.0,
+    empty_distance_cm=12.0,
+    full_distance_cm=3.0,
     smoothing_window=5,
     change_threshold_percent=5.0,
 )
