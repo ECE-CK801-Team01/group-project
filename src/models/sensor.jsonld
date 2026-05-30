@@ -13,7 +13,7 @@
         "@id" : "urn:dev:team-01:rab-pi-01",
         "@type" : "ssn-System",
         "ssn:hasSubSystem" : {"@id" : "urn:dev:team-01:pir-01"},
-        "rdfs:label" : "Raspberry Pi 5 running a debian based linux distro connected with the sensor using its GPIO pins, speciffically pin 17"
+        "rdfs:label" : "Raspberry Pi 5 running a debian based linux distro connected with the sensor using its GPIO pins, specifically pin 17"
     },
     {
         "@id" : "urn:dev:team-01:pir-01",
@@ -92,7 +92,7 @@
     },
     {
         "@id" : "urn:team:deployment",
-        "@type" : "tean:deployment",
+        "@type" : "team:deployment",
         "deployment:mountedOn" : {"@id" : "urn:dev:team-01:wastebin-01"},
         "deployment:deployedIn" : {"@id" : "urn:env:team-01:site-01"}
     },
