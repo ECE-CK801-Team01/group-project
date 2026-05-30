@@ -1,0 +1,61 @@
+# docker-compose.edge.yml — runs on the Edge machine.
+# Brings up bin-02 and bin-03 simulated producers only.
+# Each publishes to the broker on the Central machine.
+#
+# BROKER_IP comes from a .env file in this directory:
+#   BROKER_IP=192.168.1.112
+# Change that one line when switching networks (home WiFi -> hotspot, etc.).
+
+services:
+
+  producer-bin-02:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+    command: >
+      python3 -u producer.py
+        --device-id pir-02
+        --simulate
+        --activity-scale 100
+        --pin 0
+        --sample-interval 0.5
+        --cooldown 2
+        --min-high 0.3
+        --duration 999999
+        --broker ${BROKER_IP}
+        --port 1883
+        --qos 1
+        --verbose
+        --event-topic smartbin/bin-02/pir-02/events
+        --status-topic smartbin/bin-02/pir-02/status
+        --ha-config-topic homeassistant/binary_sensor/pir-02/config
+        --ha-event-topic homeassistant/binary_sensor/pir-02/events
+
+  producer-bin-03:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+    command: >
+      python3 -u producer.py
+        --device-id pir-03
+        --simulate
+        --activity-scale 50
+        --pin 0
+        --sample-interval 0.5
+        --cooldown 2
+        --min-high 0.3
+        --duration 999999
+        --broker ${BROKER_IP}
+        --port 1883
+        --qos 1
+        --verbose
+        --event-topic smartbin/bin-03/pir-03/events
+        --status-topic smartbin/bin-03/pir-03/status
+        --ha-config-topic homeassistant/binary_sensor/pir-03/config
+        --ha-event-topic homeassistant/binary_sensor/pir-03/events

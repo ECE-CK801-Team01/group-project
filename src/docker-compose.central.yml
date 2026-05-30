@@ -1,0 +1,150 @@
+# docker-compose.central.yml — runs on the Central laptop.
+# Brings up the broker, bin-01 producer (simulated), consumer, virtual
+# sensors, and the API. Home Assistant runs separately (see runbook).
+# Edge devices connect to this machine's IP on port 1883.
+
+services:
+
+  broker:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    networks:
+      - mqtt-net
+    restart: unless-stopped
+
+  producer-bin-01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+    command: >
+      python3 -u producer.py
+        --device-id pir-01
+        --simulate
+        --activity-scale 100
+        --pin 0
+        --sample-interval 0.5
+        --cooldown 2
+        --min-high 0.3
+        --duration 999999
+        --broker broker
+        --port 1883
+        --qos 1
+        --verbose
+        --event-topic smartbin/bin-01/pir-01/events
+        --status-topic smartbin/bin-01/pir-01/status
+        --ha-config-topic homeassistant/binary_sensor/pir-01/config
+        --ha-event-topic homeassistant/binary_sensor/pir-01/events
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    volumes:
+      - pipeline-data:/data
+    mem_limit: 128m
+    cpus: 0.5
+    restart: unless-stopped
+    command: >
+      python3 -u consumer.py
+        --broker broker
+        --port 1883
+        --qos 1
+        --event-topic smartbin/+/+/events
+        --status-topic smartbin/+/+/status
+        --out /data/motion_pipeline.jsonl
+
+  rules-sensor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+    command: >
+      python3 -u virtual_sensor_rules.py
+        --broker broker
+        --port 1883
+        --subscribe-topic smartbin/+/+/events
+        --window 10
+        --interval 15
+
+  ml-sensor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+    command: >
+      python3 -u virtual_sensor_ml.py
+        --broker broker
+        --port 1883
+        --publish-topic smartbin/bin-01/prediction
+        --model-path models/busy_predictor.joblib
+        --interval 30
+
+  combiner-sensor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+    command: >
+      python3 -u virtual_sensor_combiner.py
+        --broker broker
+        --port 1883
+        --interval 15
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - mqtt-net
+    depends_on:
+      - broker
+    ports:
+      - "5000:5000"
+    volumes:
+      - pipeline-data:/data
+    environment:
+      - MQTT_BROKER=broker
+      - MQTT_PORT=1883
+    mem_limit: 128m
+    cpus: 0.5
+    restart: unless-stopped
+    command: python3 -u api.py
+
+networks:
+  mqtt-net:
+    driver: bridge
+
+volumes:
+  pipeline-data:
