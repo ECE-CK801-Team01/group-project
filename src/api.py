@@ -7,7 +7,7 @@ import threading
 
 data_dir = "/data"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+MODELS_DIR = os.path.join(BASE_DIR,"models")
 
 def get_data_dir():
     """Return the data directory to use, preferring /data when available."""
@@ -41,48 +41,39 @@ def find_bin(bin_id):
 
 def get_sensor_by_id(sensor_id):
     """Find a sensor by short ID from sensor.jsonld."""
-    sensors_data = load_JSON("./models/sensor.jsonld")
-    for item in sensors_data.get("@graph", []):
-        if shorten_id(item.get("@id")) == sensor_id:
-            sensor_type = "PIR" if "PIR" in item.get("rdfs:label", "") else "Unknown"
-            # Find mounted_on
-            bins_data = load_JSON("./models/wastebin.jsonld")
-            mounted_on = None
-            for bin_item in bins_data.get("@graph", []):
-                if bin_item.get("sosa:hosts", {}).get("@id") == item.get("@id"):  # Use full id for matching
-                    mounted_on = shorten_id(bin_item.get("@id"))
-                    break
-            return {
-                "id": shorten_id(item.get("@id")),
-                "type": sensor_type,
-                "model": item.get("rdfs:label", "Unknown Model"),
-                "mounted_on": mounted_on,
-                "status": "active"
-            }
-    return None
+    all_sensors = registered_sensor()
+    index = int(sensor_id.split("-")[-1])
+    output =  all_sensors["sensors"]
+    return output[index-1]
 
 def registered_sensor():
     """Return all registered sensors from sensor.jsonld."""
-    sensors_data = load_JSON("./models/sensor.jsonld")
-    bins_data = load_JSON("./models/wastebin.jsonld")
+    sensors_data = load_JSON(os.path.join(MODELS_DIR,"sensor.jsonld"))
+    # bins_data = load_JSON("./models/wastebin.jsonld")
+    data = []
     sensors = []
-    for item in sensors_data.get("@graph", []):
-        if "sosa:Sensor" in item.get("@type", []):
-            sensor_type = "PIR" if "PIR" in item.get("rdfs:label", "") else "Unknown"
-            sensor_id = item.get("@id")
-            # Find mounted_on
-            mounted_on = None
-            for bin_item in bins_data.get("@graph", []):
-                if bin_item.get("sosa:hosts", {}).get("@id") == sensor_id:
-                    mounted_on = shorten_id(bin_item.get("@id"))
-                    break
-            sensors.append({
-                "id": shorten_id(sensor_id),
+    graph = sensors_data["@graph"]
+    for node in graph:
+        node_type = node.get("@type",[])
+
+        if isinstance(node_type,list) and "sosa:Sensor" in node_type:
+            data.append(node)
+
+        for info in data:
+            sensor_id = info["@id"]
+            sensor_id = sensor_id.split(":")[-1]
+            model = info["rdfs:label"]
+            sensor_model,sensor_type = model.split(" ")
+            mounted_on = sensor_id.split("-")[-1]
+            output = {
+                "id": sensor_id,
                 "type": sensor_type,
-                "model": item.get("rdfs:label", "Unknown Model"),
-                "mounted_on": mounted_on,
+                "model": sensor_model,
+                "mounted_on": f"wastebin-{mounted_on}",
                 "status": "active"
-            })
+            }
+            if output not in sensors:
+                sensors.append(output)
     return {"sensors": sensors}
 
 def get_sensor_for_bin(bin_id):
@@ -97,7 +88,7 @@ def get_sensor_for_bin(bin_id):
 
 def load_JSON(filepath):
     with open(file=filepath,mode="r") as f:
-        output = json.loads(f.read())
+        output = json.load(f)
         return output
     
 def save_record(record:dict):
