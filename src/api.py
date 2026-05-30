@@ -28,13 +28,13 @@ def shorten_id(full_id):
 
 def find_bin(bin_id):
     """Find a bin by short ID from wastebin.jsonld."""
-    bins_data = load_JSON("./models/wastebin.jsonld")
+    bins_data = load_JSON(os.path.join(MODELS_DIR,"wastebin.jsonld"))
     for item in bins_data.get("@graph", []):
         if shorten_id(item.get("@id")) == bin_id:
             return {
                 "id": shorten_id(item.get("@id")),
                 "name": item.get("rdfs:label", "Unknown Bin"),
-                "location": "site-01",  # Inferred from models
+                "location": shorten_id(item.get("team:locatedIn","{'@id':idk}")['@id']),
                 "status": "active"
             }
     return None
@@ -181,14 +181,14 @@ ns = api.namespace("bins",description="Wastebin operations")
 class BinList(Resource):
     def get(self):
         """List all registered bins."""
-        bins_data = load_JSON("./models/wastebin.jsonld")
+        bins_data = load_JSON(os.path.join(MODELS_DIR,"wastebin.jsonld"))
         bins = []
         for item in bins_data.get("@graph", []):
-            if "s4evi:Container" in item.get("@type", []):
+            if "team:WasteBin" in item.get("@type", []):
                 bins.append({
                     "id": shorten_id(item.get("@id")),
                     "name": item.get("rdfs:label", "Unknown Bin"),
-                    "location": "site-01",
+                    "location": shorten_id(item.get("team:locatedIn","{'@id':idk}")['@id']),
                     "status": "active"
                 })
         return {"bins": bins}, 200

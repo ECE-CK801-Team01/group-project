@@ -9,7 +9,8 @@
     "bot": "https://w3id.org/bot#",
     "qudt-unit-1-1": "http://qudt.org/vocab/unit#"
   },
-  "@id": "urn:dev:team-01:wastebin-01",
+  "@graph":[
+  {"@id": "urn:dev:team-01:wastebin-01",
   "@type": [
     "sosa:FeatureOfInterest",
     "bot:Element",
@@ -42,5 +43,6 @@
   ],
   "team:locatedIn": {
     "@id": "urn:env:team-01:space-01"
-  }
+  }}
+  ]
 }
