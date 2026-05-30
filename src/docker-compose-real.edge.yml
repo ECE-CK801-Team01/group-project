@@ -21,7 +21,7 @@ services:
           --cooldown 2
           --min-high 0.3
           --duration 999999
-          --broker broker
+          --broker BROKER_IP=10.144.118.81
           --port 1883
           --event-topic smartbin/bin-01/pir-01/events
           --status-topic smartbin/bin-01/pir-01/status
@@ -30,6 +30,6 @@ services:
           --ha-config-topic homeassistant/binary_sensor/pir-01/config
           --ha-event-topic homeassistant/binary_sensor/pir-01/events
     
-networks:
-  mqtt-net:
-    external: true
+# networks:
+#   mqtt-net:
+#     external: true
