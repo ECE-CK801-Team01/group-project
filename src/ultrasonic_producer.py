@@ -28,7 +28,7 @@ else:
 
 sleep(1)
 
-client.publish(topic="smartbin",payload=event)
+client.publish(topic="smartbin",payload=event["fill_percent"])
 
 sampler.close()
 client.loop_stop()
