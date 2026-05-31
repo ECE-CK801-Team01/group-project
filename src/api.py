@@ -82,10 +82,10 @@ def registered_sensor():
 
 def get_sensor_for_bin(bin_id):
     """Get the sensor ID hosted by the bin from wastebin.jsonld."""
-    bins_data = load_JSON("./models/wastebin.jsonld")
+    bins_data = load_JSON(os.path.join(MODELS_DIR,"wastebin.jsonld"))
     for item in bins_data.get("@graph", []):
         if shorten_id(item.get("@id")) == bin_id:
-            hosted = item.get("sosa:hosts")
+            hosted = item.get("team:hasSensor")[0]
             if hosted:
                 return shorten_id(hosted.get("@id"))
     return None
@@ -117,14 +117,15 @@ def load_events(filepath,limit=None,sensor_id=None):
 
             try:
                 record = json.loads(line)
+                print(record)
             except json.JSONDecodeError:
                 continue
-
+            
             made_by = record.get("madeBySensor") or record.get("device-id")
             if sensor_id and made_by:
                 if sensor_id != shorten_id(made_by):
                     continue
-
+            print(record["event_time"])
             events.append(record)
 
         events.reverse()
@@ -158,9 +159,9 @@ bin_model = api.model("Bin", {
 })
 
 event_model = api.model("Event", {
-    "resultTime": fields.String(description="ISO timestamp of the event"),
+    "event_time": fields.String(description="ISO timestamp of the event"),
     "madeBySensor": fields.String(description="Sensor ID that produced this event"),
-    "hasSimpleResult": fields.String(description="Motion state (detected/clear)"),
+    "motion_state": fields.String(description="Motion state (detected/clear)"),
     "pipeline_latency_ms": fields.Float(description="Pipeline latency in ms"),
 })
 
