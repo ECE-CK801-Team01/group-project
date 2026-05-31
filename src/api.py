@@ -47,6 +47,7 @@ def get_sensor_by_id(sensor_id):
     if sensor_type == "ultra": sensor_index+=3
     if sensor_type not in ["ultra","pir"] : return None
     output =  all_sensors["sensors"]
+    if sensor_index > len(output) : return None
     return output[sensor_index-1]
 
 def registered_sensor():
