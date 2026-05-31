@@ -76,7 +76,20 @@
         "@id": "urn:system:opRange"
       }
     },
-
+    {
+    "@id": "urn:dev:team-01:ultra-01",
+    "@type": ["sosa:Sensor", "ssn:System"],
+    "sosa:observes": {
+      "@id": "urn:obs:distanceProperty"
+    },
+    "rdfs:label": "Ultrasonic HC-SR04",
+    "ssn-system:hasSystemCapability": {
+      "@id": "urn:system:ultraCapabilities"
+    },
+    "ssn-system:hasOperatingRange": {
+      "@id": "urn:system:ultraOpRange"
+    }
+    },
     {
       "@id": "urn:obs:motion-01",
       "@type": "sosa:Observation",
@@ -89,6 +102,20 @@
       "sosa:hasFeatureOfInterest": {
         "@id": "urn:dev:team-01:wastebin-01"
       }
+    },
+    {
+    "@id": "urn:obs:distance-01",
+    "@type": "sosa:Observation",
+    "sosa:madeBySensor": {
+      "@id": "urn:dev:team-01:ultra-01"
+    },
+    "sosa:observedProperty": {
+      "@id": "urn:obs:distanceProperty"
+    },
+    "sosa:hasFeatureOfInterest": {
+      "@id": "urn:dev:team-01:wastebin-01"
+    },
+    "rdfs:label": "Measures fill level distance inside wastebin 01"
     },
     {
       "@id": "urn:obs:motion-02",
@@ -116,7 +143,6 @@
         "@id": "urn:dev:team-01:wastebin-03"
       }
     },
-
     {
       "@id": "urn:team:deployment-01",
       "@type": "team:deployment",
@@ -153,6 +179,11 @@
         "rdfs:label" : "It detects the passive infared heat emmited from warm bodies"
     },
     {
+      "@id": "urn:obs:distanceProperty",
+      "@type": "sosa:ObservableProperty",
+      "rdfs:label": "Distance to object measured using ultrasonic echo"
+    },
+    {
         "@id" : "urn:system:WorkingConditions",
         "@type" : "ssn-system:Condition",
         "schema:minValue" : -15.0,
@@ -165,6 +196,14 @@
         "@type" : "ssn-system:SystemCapability",
         "ssn-system:inCondition" : {"@id" : "urn:system:WorkingConditions"},
         "ssn-system:hasSystemProperty" : [{"@id" : "urn:system:frequency"},{"@id" : "urn:system:mesRange"},{"@id":"urn:system:detectionRange"},{"@id":"urn:system:detectionAngle"}]
+    },
+    {
+    "@id": "urn:system:ultraCapabilities",
+    "@type": "ssn-system:SystemCapability",
+    "ssn-system:inCondition": {
+      "@id": "urn:system:WorkingConditions"
+    },
+    "ssn-system:hasSystemProperty": [{"@id": "urn:system:ultraFrequency"},{"@id": "urn:system:ultraRange"},{"@id": "urn:system:ultraAccuracy"}]
     },
     {
         "@id" : "urn:system:mesRange",
@@ -207,9 +246,41 @@
         "schema:unitCode":"qudt-unit-1-1:Volt"
     },
     {
+    "@id": "urn:system:ultraRange",
+    "@type": "ssn-system:MeasurementRange",
+    "schema:minValue": 2,
+    "schema:maxValue": 400,
+    "schema:unitCode": "Centimeter",
+    "rdfs:label": "Distance measurement range"
+    },
+    {
+    "@id": "urn:system:ultraAccuracy",
+    "@type": "ssn-system:SystemProperty",
+    "schema:value": 3,
+    "schema:unitCode": "Millimeter",
+    "rdfs:label": "Measurement accuracy"
+    },
+    {
+    "@id": "urn:system:ultraOpRange",
+    "@type": "ssn-system:OperatingRange",
+    "ssn-system:inCondition": {
+      "@id": "urn:system:WorkingConditions"
+    },
+    "ssn-system:hasOperatingProperty": {
+      "@id": "urn:system:ultraPowerRange"
+    }
+    },
+    {
+    "@id": "urn:system:ultraPowerRange",
+    "@type": "ssn-system:OperatingPowerRange",
+    "schema:minValue": 5,
+    "schema:maxValue": 5,
+    "schema:unitCode": "Volt"
+    },
+    {
         "@id" : "urn:team:status",
         "@type" : "team:status",
         "status:currentStatus" : "Active",
-        "status:installationDate" : "Kapote"
+        "status:installationDate" : "2/6/2026"
     }
     ]}
