@@ -1,8 +1,3 @@
-# docker-compose.central.yml — runs on the Central laptop.
-# Brings up the broker, bin-01 producer (simulated), consumer, virtual
-# sensors, and the API. Home Assistant runs separately (see runbook).
-# Edge devices connect to this machine's IP on port 1883.
-
 services:
 
   broker:
