@@ -42,9 +42,12 @@ def find_bin(bin_id):
 def get_sensor_by_id(sensor_id):
     """Find a sensor by short ID from sensor.jsonld."""
     all_sensors = registered_sensor()
-    index = int(sensor_id.split("-")[-1])
+    sensor_type,sensor_index = sensor_id.split("-")
+    sensor_index = int(sensor_index)
+    if sensor_type == "ultra": sensor_index+=3
+    if sensor_type not in ["ultra","pir"] : return None
     output =  all_sensors["sensors"]
-    return output[index-1]
+    return output[sensor_index-1]
 
 def registered_sensor():
     """Return all registered sensors from sensor.jsonld."""
@@ -67,8 +70,8 @@ def registered_sensor():
             mounted_on = sensor_id.split("-")[-1]
             output = {
                 "id": sensor_id,
-                "type": sensor_type,
-                "model": sensor_model,
+                "type": sensor_model,
+                "model": sensor_type,
                 "mounted_on": f"wastebin-{mounted_on}",
                 "status": "active"
             }
@@ -192,7 +195,7 @@ class BinList(Resource):
                     "location": shorten_id(item.get("team:locatedIn","{'@id':idk}")['@id']),
                     "status": "active"
                 })
-        return {"bins": bins}, 200
+        return bins, 200
     
 @ns.route("/<string:bin_id>")
 @ns.param("bin_id", "The bin identifier")

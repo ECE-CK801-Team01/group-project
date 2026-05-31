@@ -87,6 +87,7 @@ def producer(device_id:str,
         client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, userdata=userdata)
         client.on_connect = on_connect
         client.on_publish = on_publish
+        client.will_set(userdata.status_topic, json.dumps({"status": "offline"}), qos=userdata.qos, retain=True) # last will
         client.connect(broker, port)
         client.loop_start()
 
@@ -99,7 +100,7 @@ def producer(device_id:str,
                             "@context" : "models/context.jsonld",
                             "madeBySensor" : f"urn:dev:team-01:{device_id}",
                             "WasteBin" : f"urn:dev:team-01:{device_id.replace('pir', 'wastebin')}",
-                            "Enviroment" : "urn:env:team-01:site-01",
+                            "Environment" : "urn:env:team-01:site-01",
                             "event_time" : utc_now_iso(),
                             "ingest_time" : "",
                             "device-id" : device_id,

@@ -18,7 +18,7 @@ services:
           --cooldown 2
           --min-high 0.3
           --duration 999999
-          --broker BROKER_IP=10.144.118.81
+          --broker 192.168.1.112
           --port 1883
           --event-topic smartbin/bin-01/pir-01/events
           --status-topic smartbin/bin-01/pir-01/status
