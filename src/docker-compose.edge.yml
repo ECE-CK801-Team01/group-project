@@ -1,11 +1,3 @@
-# docker-compose.edge.yml — runs on the Edge machine.
-# Brings up bin-02 and bin-03 simulated producers only.
-# Each publishes to the broker on the Central machine.
-#
-# BROKER_IP comes from a .env file in this directory:
-#   BROKER_IP=192.168.1.112
-# Change that one line when switching networks (home WiFi -> hotspot, etc.).
-
 services:
 
   producer-bin-02:
