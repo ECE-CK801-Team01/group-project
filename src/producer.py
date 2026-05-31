@@ -87,8 +87,8 @@ def producer(device_id:str,
         client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, userdata=userdata)
         client.on_connect = on_connect
         client.on_publish = on_publish
+        client.will_set(userdata.status_topic, json.dumps({"status": "offline"}), qos=userdata.qos, retain=True) # last will
         client.connect(broker, port)
-        client.loop_start()
 
         while time() - start_time < duration:
             cur_time = time()
