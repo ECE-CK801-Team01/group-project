@@ -42,9 +42,13 @@ def find_bin(bin_id):
 def get_sensor_by_id(sensor_id):
     """Find a sensor by short ID from sensor.jsonld."""
     all_sensors = registered_sensor()
-    index = int(sensor_id.split("-")[-1])
+    sensor_type,sensor_index = sensor_id.split("-")
+    sensor_index = int(sensor_index)
+    if sensor_type == "ultra": sensor_index+=3
+    if sensor_type not in ["ultra","pir"] : return None
     output =  all_sensors["sensors"]
-    return output[index-1]
+    if sensor_index > len(output) : return None
+    return output[sensor_index-1]
 
 def registered_sensor():
     """Return all registered sensors from sensor.jsonld."""
@@ -67,8 +71,8 @@ def registered_sensor():
             mounted_on = sensor_id.split("-")[-1]
             output = {
                 "id": sensor_id,
-                "type": sensor_type,
-                "model": sensor_model,
+                "type": sensor_model,
+                "model": sensor_type,
                 "mounted_on": f"wastebin-{mounted_on}",
                 "status": "active"
             }
@@ -78,10 +82,10 @@ def registered_sensor():
 
 def get_sensor_for_bin(bin_id):
     """Get the sensor ID hosted by the bin from wastebin.jsonld."""
-    bins_data = load_JSON("./models/wastebin.jsonld")
+    bins_data = load_JSON(os.path.join(MODELS_DIR,"wastebin.jsonld"))
     for item in bins_data.get("@graph", []):
         if shorten_id(item.get("@id")) == bin_id:
-            hosted = item.get("sosa:hosts")
+            hosted = item.get("team:hasSensor")[0]
             if hosted:
                 return shorten_id(hosted.get("@id"))
     return None
@@ -113,14 +117,15 @@ def load_events(filepath,limit=None,sensor_id=None):
 
             try:
                 record = json.loads(line)
+                print(record)
             except json.JSONDecodeError:
                 continue
-
+            
             made_by = record.get("madeBySensor") or record.get("device-id")
             if sensor_id and made_by:
                 if sensor_id != shorten_id(made_by):
                     continue
-
+            print(record["event_time"])
             events.append(record)
 
         events.reverse()
@@ -154,9 +159,9 @@ bin_model = api.model("Bin", {
 })
 
 event_model = api.model("Event", {
-    "resultTime": fields.String(description="ISO timestamp of the event"),
+    "event_time": fields.String(description="ISO timestamp of the event"),
     "madeBySensor": fields.String(description="Sensor ID that produced this event"),
-    "hasSimpleResult": fields.String(description="Motion state (detected/clear)"),
+    "motion_state": fields.String(description="Motion state (detected/clear)"),
     "pipeline_latency_ms": fields.Float(description="Pipeline latency in ms"),
 })
 
@@ -191,7 +196,7 @@ class BinList(Resource):
                     "location": shorten_id(item.get("team:locatedIn","{'@id':idk}")['@id']),
                     "status": "active"
                 })
-        return {"bins": bins}, 200
+        return bins, 200
     
 @ns.route("/<string:bin_id>")
 @ns.param("bin_id", "The bin identifier")
