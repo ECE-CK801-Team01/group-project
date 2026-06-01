@@ -60,8 +60,9 @@ services:
         --qos 1
         --event-topic smartbin/+/+/events
         --status-topic smartbin/+/+/status
-        --out /data/motion_pipeline.jsonl
-
+        --out_motion /data/motion_events.jsonl
+        --out_fill /data/fill_events.jsonl
+        
   rules-sensor:
     build:
       context: .
