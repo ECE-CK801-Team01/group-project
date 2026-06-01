@@ -17,7 +17,7 @@
     "team:WasteBin"
   ],
   "name": "Smart Wastebin 01",
-  "description": "Indoor wastebin instrumented with a PIR motion sensor and deployed in the lab.",
+  "description": "Indoor wastebin instrumented with a PIR motion sensor and ultrasonic fill-level sensor, deployed in the lab.",
   "rdfs:label": "Wastebin 01",
   "color": "Gray",
   "material": "Plastic",
@@ -39,10 +39,79 @@
   },
 
   "team:hasSensor": [
-    { "@id": "urn:dev:team-01:pir-01" }
+    { "@id": "urn:dev:team-01:pir-01" },
+    { "@id": "urn:dev:team-01:ultra-01" }
   ],
   "team:locatedIn": {
     "@id": "urn:env:team-01:space-01"
+  }},
+  {"@id": "urn:dev:team-01:wastebin-02",
+  "@type": [
+    "sosa:FeatureOfInterest",
+    "bot:Element",
+    "team:WasteBin"
+  ],
+  "name": "Smart Wastebin 02",
+  "description": "Outdoor wastebin instrumented with a PIR motion sensor, deployed in the parking lot.",
+  "rdfs:label": "Wastebin 02",
+  "color": "Gray",
+  "material": "Plastic",
+
+  "team:capacityLiters": {
+    "schema:value" : 0.48,
+    "schema:unitCode:qudt-unit-1-1" : "Liter"
+  },
+  "team:wasteType": "mixed",
+  "team:collectionZone": "zone-b",
+  "team:currentStatus": "active",
+  "team:heightCm": {
+    "schema:value" : 14.2,
+    "schema:unitCode:qudt-unit-1-1" : "Centimeter"
+  },
+  "team:diameterCm": {
+    "schema:value" : 6.8,
+    "schema:unitCode:qudt-unit-1-1" : "Centimeter"
+  },
+
+  "team:hasSensor": [
+    { "@id": "urn:dev:team-01:pir-02" }
+  ],
+  "team:locatedIn": {
+    "@id": "urn:env:team-01:parking-lot"
+  }},
+  {"@id": "urn:dev:team-01:wastebin-03",
+  "@type": [
+    "sosa:FeatureOfInterest",
+    "bot:Element",
+    "team:WasteBin"
+  ],
+  "name": "Smart Wastebin 03",
+  "description": "Indoor wastebin instrumented with a PIR motion sensor, deployed in the corridor.",
+  "rdfs:label": "Wastebin 03",
+  "color": "Gray",
+  "material": "Plastic",
+
+  "team:capacityLiters": {
+    "schema:value" : 0.48,
+    "schema:unitCode:qudt-unit-1-1" : "Liter"
+  },
+  "team:wasteType": "mixed",
+  "team:collectionZone": "zone-c",
+  "team:currentStatus": "active",
+  "team:heightCm": {
+    "schema:value" : 14.2,
+    "schema:unitCode:qudt-unit-1-1" : "Centimeter"
+  },
+  "team:diameterCm": {
+    "schema:value" : 6.8,
+    "schema:unitCode:qudt-unit-1-1" : "Centimeter"
+  },
+
+  "team:hasSensor": [
+    { "@id": "urn:dev:team-01:pir-03" }
+  ],
+  "team:locatedIn": {
+    "@id": "urn:env:team-01:corridor"
   }}
   ]
 }

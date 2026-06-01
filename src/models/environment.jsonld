@@ -23,9 +23,10 @@
       "containedInPlace": {
         "@id": "urn:env:team-01:site-01"
       },
-      "bot:hasStorey": {
-        "@id": "urn:env:team-01:storey-01"
-      }
+      "bot:hasStorey": [
+        {"@id": "urn:env:team-01:storey-01"},
+        {"@id": "urn:env:team-01:storey-02"}
+      ]
     },
     {
       "@id": "urn:env:team-01:storey-01",
@@ -46,6 +47,39 @@
       },
       "bot:containsElement": {
         "@id": "urn:dev:team-01:wastebin-01"
+      }
+    },
+    {
+      "@id": "urn:env:team-01:storey-02",
+      "@type": "bot:Storey",
+      "name": "Second Floor",
+      "description": "The storey that contains the corridor deployment space.",
+      "bot:hasSpace": {
+        "@id": "urn:env:team-01:corridor"
+      }
+    },
+    {
+      "@id": "urn:env:team-01:corridor",
+      "@type": ["bot:Space", "schema:Place"],
+      "name": "Corridor",
+      "description": "Indoor corridor where Smart Wastebin 03 and its PIR sensor are deployed.",
+      "containedInPlace": {
+        "@id": "urn:env:team-01:building-01"
+      },
+      "bot:containsElement": {
+        "@id": "urn:dev:team-01:wastebin-03"
+      }
+    },
+    {
+      "@id": "urn:env:team-01:parking-lot",
+      "@type": ["bot:Space", "schema:Place"],
+      "name": "Parking Lot",
+      "description": "Outdoor parking lot where Smart Wastebin 02 and its PIR sensor are deployed.",
+      "containedInPlace": {
+        "@id": "urn:env:team-01:site-01"
+      },
+      "bot:containsElement": {
+        "@id": "urn:dev:team-01:wastebin-02"
       }
     }
   ]
