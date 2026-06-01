@@ -27,6 +27,38 @@ services:
           --ha-config-topic homeassistant/binary_sensor/pir-01/config
           --ha-event-topic homeassistant/binary_sensor/pir-01/events
     
+  producer-fill-01:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      privileged: true
+      devices:
+        - "/dev/gpiomem0:/dev/gpiomem"
+        - "/dev/gpiochip0:/dev/gpiochip0"
+      cpus: 0.5
+      restart: unless-stopped
+      command: >
+        python3 -u ultrasonic_producer.py
+          --device-id ultra-01
+          --bin-id bin-01
+          --trig-pin 23
+          --echo-pin 24
+          --empty-distance 12.0
+          --full-distance 3.0
+          --sample-interval 5.0
+          --smoothing-window 5
+          --change-threshold 5.0
+          --duration 999999
+          --broker 192.168.1.112
+          --port 1883
+          --state-topic smartbin/bin-01/ultra-01/state
+          --event-topic smartbin/bin-01/ultra-01/events
+          --status-topic smartbin/bin-01/ultra-01/status
+          --ha-config-topic homeassistant/sensor/bin_01_fill_level/config
+          --qos 1
+          --verbose
+
+
 # networks:
 #   mqtt-net:
 #     external: true
