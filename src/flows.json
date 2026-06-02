@@ -1,0 +1,537 @@
+[
+    {
+        "id": "67715b2c78ebaed8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9fc7f21aee2e06f7",
+        "type": "mqtt in",
+        "z": "67715b2c78ebaed8",
+        "name": "",
+        "topic": "smartbin/bin-01/pir-01/events",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "07cc291ea542936f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 520,
+        "wires": [
+            [
+                "bc18345dcb32d253",
+                "06cfa83c14aac1b3"
+            ]
+        ]
+    },
+    {
+        "id": "33ec86b59f2229aa",
+        "type": "debug",
+        "z": "67715b2c78ebaed8",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 560,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "f02435d0b3b5adbe",
+        "type": "inject",
+        "z": "67715b2c78ebaed8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "Hello World!",
+        "payloadType": "str",
+        "x": 290,
+        "y": 220,
+        "wires": [
+            [
+                "4ab35ff131c87fa8"
+            ]
+        ]
+    },
+    {
+        "id": "65aac3c2ab65b4ac",
+        "type": "debug",
+        "z": "67715b2c78ebaed8",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "4ab35ff131c87fa8",
+        "type": "function",
+        "z": "67715b2c78ebaed8",
+        "name": "function 1",
+        "func": "msg.payload = msg.payload.toUpperCase();\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 220,
+        "wires": [
+            [
+                "65aac3c2ab65b4ac"
+            ]
+        ]
+    },
+    {
+        "id": "bc18345dcb32d253",
+        "type": "switch",
+        "z": "67715b2c78ebaed8",
+        "name": "",
+        "property": "payload.motion_state",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "detected",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 410,
+        "y": 520,
+        "wires": [
+            [
+                "6639e90666572a90"
+            ]
+        ]
+    },
+    {
+        "id": "6639e90666572a90",
+        "type": "function",
+        "z": "67715b2c78ebaed8",
+        "name": "function 2",
+        "func": "// let event_log = flow.get(\"events\");\n// if (!Array.isArray(event_log)){\n//     event_log = [];\n// }\n// const current_time = Date.now()\n// const TIME_WINDOW = 10*60*1000 // in ms\n// event_log[\"ingest_time\"] = String(current_time);\n// console.log(event_log.ingest_time , event_log[\"ingest_time\"])\n// console.log(event_log);\n// for (let index = 0; index < event_log.length; index++) {\n//     const element = event_log[index];\n//     if (element[\"event_time\"] - element[\"ingest_time\"] >= TIME_WINDOW){\n//         event_log.splice(index,1);\n//     }\n// }\n// console.log(event_log);\n// flow.set(\"events\",event_log);\n// let event_count = event_log.length;\n// let activity_level;\n// if (event_count == 0){\n//     activity_level = \"idle\"\n// }\n// else if (event_count <= 5 ) {\n//     activity_level = \"low\"\n// }\n// else if (event_count <= 15) {\n//     activity_level = \"medium\"\n// }\n// else {\n//     activity_level = \"high\"\n// }\n\n// msg.payload\n\n// return msg;\n\nconst windowMinutes = 10;\n\n// Thresholds\n// 0      -> idle\n// 1-5    -> low\n// 6-15   -> medium\n// 16+    -> high\n\nlet eventTimes = context.get(\"eventTimes\") || [];\n\nlet payload = msg.payload;\n\n// If MQTT In outputs a string, parse it.\n// If it already outputs parsed JSON, keep it.\nif (typeof payload === \"string\") {\n    try {\n        payload = JSON.parse(payload);\n    } catch (err) {\n        // Ignore invalid JSON messages\n        return null;\n    }\n}\n\n// Accept both Lab09 field style and JSON-LD-ish field style.\nconst isDetected =\n    payload.motion_state === \"detected\"\npayload.hasSimpleResult === \"detected\";\n\n// Only count detected motion events.\nif (!isDetected) {\n    return null;\n}\n\nconst now = Date.now();\nconst cutoff = now - windowMinutes * 60 * 1000;\n\n// Add current event timestamp.\neventTimes.push(now);\n\n// Remove events outside the rolling window.\neventTimes = eventTimes.filter(t => t >= cutoff);\n\n// Save updated rolling window.\ncontext.set(\"eventTimes\", eventTimes);\n\nconst count = eventTimes.length;\n\nlet usageLevel;\nif (count === 0) {\n    usageLevel = \"idle\";\n} else if (count <= 5) {\n    usageLevel = \"low\";\n} else if (count <= 15) {\n    usageLevel = \"medium\";\n} else {\n    usageLevel = \"high\";\n}\n\n// Publish result.\nmsg.payload = {\n    usage_level: usageLevel,\n    event_count: count,\n    window_size: windowMinutes,\n    current_time: new Date(now).toISOString()\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 520,
+        "wires": [
+            [
+                "92af1348eaa03c0c",
+                "8abbaf9f6224891f",
+                "4e925c80051c62be"
+            ]
+        ]
+    },
+    {
+        "id": "92af1348eaa03c0c",
+        "type": "switch",
+        "z": "67715b2c78ebaed8",
+        "name": "",
+        "property": "payload.usage_level",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "high",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 750,
+        "y": 520,
+        "wires": [
+            [
+                "942d9763fc2d4fd4",
+                "042e5302e02fe7a6",
+                "313955b98902b9d6"
+            ]
+        ]
+    },
+    {
+        "id": "942d9763fc2d4fd4",
+        "type": "debug",
+        "z": "67715b2c78ebaed8",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 900,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "a8af4e4b28ee0398",
+        "type": "http request",
+        "z": "67715b2c78ebaed8",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://webhook.site/8e779238-a8d4-4a71-8ab3-d6afaa266959",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1070,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "042e5302e02fe7a6",
+        "type": "function",
+        "z": "67715b2c78ebaed8",
+        "name": "function 3",
+        "func": "msg.payload = {\n    text: \"Wastebin bin-01 usage is HIGH(\" + msg.payload.event_count + \"events in 10 min)\"\n};\nmsg.headers = {\"Content-Type\" : \"application/json\"};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 420,
+        "wires": [
+            [
+                "a8af4e4b28ee0398"
+            ]
+        ]
+    },
+    {
+        "id": "313955b98902b9d6",
+        "type": "mqtt out",
+        "z": "67715b2c78ebaed8",
+        "name": "",
+        "topic": "smartbin/bin-01/alerts",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "07cc291ea542936f",
+        "x": 960,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "06cfa83c14aac1b3",
+        "type": "switch",
+        "z": "67715b2c78ebaed8",
+        "name": "",
+        "property": "payload.hasSimpleResult",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "detected",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "clear",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 130,
+        "y": 760,
+        "wires": [
+            [
+                "e814f1970e920a3c"
+            ],
+            [
+                "bbc7a4844d97953c"
+            ]
+        ]
+    },
+    {
+        "id": "e814f1970e920a3c",
+        "type": "file",
+        "z": "67715b2c78ebaed8",
+        "name": "",
+        "filename": "/data/detected_events.log",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 350,
+        "y": 720,
+        "wires": [
+            [
+                "6639e90666572a90"
+            ]
+        ]
+    },
+    {
+        "id": "bbc7a4844d97953c",
+        "type": "debug",
+        "z": "67715b2c78ebaed8",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 300,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "8abbaf9f6224891f",
+        "type": "ui-gauge",
+        "z": "67715b2c78ebaed8",
+        "name": "Bin Usage",
+        "group": "a79387985659404d",
+        "order": 1,
+        "value": "payload.event_count",
+        "valueType": "msg",
+        "width": 3,
+        "height": 3,
+        "gtype": "gauge-half",
+        "gstyle": "needle",
+        "title": "gauge",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "units",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "5",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "15",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "30",
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 830,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4e925c80051c62be",
+        "type": "ui-text",
+        "z": "67715b2c78ebaed8",
+        "group": "a79387985659404d",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "Usage Level",
+        "label": "text",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload.usage_level",
+        "valueType": "msg",
+        "x": 990,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "07cc291ea542936f",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "a79387985659404d",
+        "type": "ui-group",
+        "name": "Smart Wastebin",
+        "page": "0fdde23cb87d4df9",
+        "width": 6,
+        "height": 1,
+        "order": -1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "0fdde23cb87d4df9",
+        "type": "ui-page",
+        "name": "Page 1",
+        "ui": "3e63bf1189cfc03a",
+        "path": "/page1",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "8045350b890a4713",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": 0,
+                "cols": 3
+            },
+            {
+                "name": "Tablet",
+                "px": 576,
+                "cols": 6
+            },
+            {
+                "name": "Small Desktop",
+                "px": 768,
+                "cols": 9
+            },
+            {
+                "name": "Desktop",
+                "px": 1024,
+                "cols": 12
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "3e63bf1189cfc03a",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "8045350b890a4713",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "de61abd310a05503",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.30.2"
+        }
+    }
+]

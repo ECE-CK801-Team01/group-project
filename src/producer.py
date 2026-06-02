@@ -51,7 +51,7 @@ def pub_disc_info(client, userdata: Data, device_id: str):
             "payload_not_available": "offline",
             "value_template": "{{ value_json.status }}",
         },
-        "off_delay": 8,
+        "off_delay": 6,
         "unique_id": f"{device_id}_motion",
         "device": {
             "identifiers": [device_id],
