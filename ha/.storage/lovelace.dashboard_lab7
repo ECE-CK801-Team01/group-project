@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_lab7",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "path": "default_view",
+          "title": "Home",
+          "cards": [
+            {
+              "type": "entities",
+              "entities": [
+                "person.team_01"
+              ]
+            },
+            {
+              "type": "entities",
+              "entities": [
+                "binary_sensor.pir_sensor_01_pir_motion_sensor"
+              ],
+              "title": "Binary sensor"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                "counter.motion_count"
+              ],
+              "title": "Helpers"
+            },
+            {
+              "type": "conditional",
+              "conditions": [
+                {
+                  "entity": "binary_sensor.pir_motion_sensor",
+                  "state": "on"
+                }
+              ],
+              "card": {
+                "type": "markdown",
+                "content": "**Motion Detected!**\n"
+              }
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "sensor.smart_wastebin_01_bin_usage_intensity",
+                  "name": "Bin Usage Intensity"
+                },
+                {
+                  "entity": "sensor.smart_wastebin_bin_01_bin_01_busy_prediction",
+                  "name": "Bin-01 Busy Prediction"
+                }
+              ],
+              "title": "Smart Wastebin bin-01"
+            },
+            {
+              "title": "History",
+              "type": "history-graph",
+              "hours_to_show": 37,
+              "entities": [
+                "binary_sensor.pir_sensor_01_pir_motion_sensor"
+              ]
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "binary_sensor.pir_sensor_01_pir_motion_sensor",
+                  "name": "PIR Motion Sensor"
+                }
+              ],
+              "title": "PIR Sensor pir-01"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "binary_sensor.pir_sensor_pir_02_pir_motion_sensor",
+                  "name": "PIR Motion Sensor"
+                }
+              ],
+              "title": "PIR Sensor pir-02"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "binary_sensor.pir_sensor_pir_03_pir_motion_sensor",
+                  "name": "PIR Motion Sensor"
+                }
+              ],
+              "title": "PIR Sensor pir-03"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

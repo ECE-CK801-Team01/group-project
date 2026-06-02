@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace_dashboards",
+  "data": {
+    "items": [
+      {
+        "id": "map",
+        "icon": "mdi:map",
+        "title": "Map",
+        "url_path": "map",
+        "require_admin": false,
+        "mode": "storage",
+        "show_in_sidebar": true
+      },
+      {
+        "id": "dashboard_lab7",
+        "show_in_sidebar": true,
+        "icon": "mdi:developer-board",
+        "title": "Lab",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "dashboard-lab7"
+      },
+      {
+        "id": "smart_wastebin_operations",
+        "show_in_sidebar": true,
+        "icon": "mdi:trash-can",
+        "title": "Smart Wastebin Operations",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "smart-wastebin-operations"
+      }
+    ]
+  }
+}

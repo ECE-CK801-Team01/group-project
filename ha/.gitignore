@@ -1,0 +1,28 @@
+﻿# Don't commit these even if accidentally copied in.
+
+# Auth & tokens — sensitive
+.storage/auth*
+.storage/http*
+.storage/onboarding*
+.storage/person
+
+# Runtime state — regenerable, machine-specific
+.storage/core.restore_state
+.storage/core.uuid
+.storage/repairs.issue_registry
+.storage/trace.saved_traces
+.storage/core.analytics
+.storage/bluetooth.*
+
+# Database & logs
+home-assistant_v2.db*
+*.log
+*.log.*
+.ha_run.lock
+
+# Caches
+.cache/
+.cloud/
+deps/
+tts/
+blueprints/

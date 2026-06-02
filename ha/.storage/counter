@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "counter",
+  "data": {
+    "items": [
+      {
+        "id": "motion_count",
+        "name": "Cafeteria Motion Count",
+        "icon": "mdi:motion-sensor",
+        "initial": 0,
+        "step": 1,
+        "minimum": null,
+        "restore": true,
+        "maximum": null
+      },
+      {
+        "id": "hallway_motion_count",
+        "name": "Hallway Motion Count",
+        "initial": 0,
+        "step": 1,
+        "minimum": null,
+        "maximum": null,
+        "restore": true
+      },
+      {
+        "id": "lab_room_motion_count",
+        "name": "Lab Room Motion Count",
+        "initial": 0,
+        "step": 1,
+        "minimum": null,
+        "maximum": null,
+        "restore": true
+      }
+    ]
+  }
+}

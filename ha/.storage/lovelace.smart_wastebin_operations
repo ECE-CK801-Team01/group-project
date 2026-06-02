@@ -1,0 +1,246 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.smart_wastebin_operations",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "type": "sections",
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "markdown",
+                  "content": "## 🔮 Next-Hour Forecast\n\n{% set p = 'sensor.smart_wastebin_bin_01_bin_01_busy_prediction' %}\n{% set pred = states(p) %}\n{% set conf = state_attr(p, 'confidence') %}\n{% if pred == 'busy' %}\n### 🔴 BUSY expected\n{% elif pred == 'quiet' %}\n### 🟢 Quiet expected\n{% else %}\n### ⚪ No forecast yet\n{% endif %}\n\n**Confidence:** {{ (conf * 100) | round(0) if conf is not none else '—' }}%\n&nbsp;&nbsp;|&nbsp;&nbsp; **For hour:** {{ state_attr(p, 'predicted_hour') }}:00",
+                  "grid_options": {
+                    "columns": 12,
+                    "rows": "auto"
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "conditions": [
+                    {
+                      "condition": "numeric_state",
+                      "entity": "sensor.smart_wastebin_bin_01_bin_01_fill_level",
+                      "above": 80
+                    }
+                  ],
+                  "card": {
+                    "type": "markdown",
+                    "content": "## 🚨 SERVICE NOW\n\n**Cafeteria bin is at {{ states('sensor.smart_wastebin_bin_01_bin_01_fill_level') }}%**\n"
+                  }
+                }
+              ],
+              "column_span": 2,
+              "background": {
+                "color": "blue",
+                "opacity": 50
+              }
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "vertical-stack",
+                  "cards": [
+                    {
+                      "type": "tile",
+                      "entity": "binary_sensor.pir_sensor_pir_01_pir_motion_sensor",
+                      "name": "Cafeteria Bin",
+                      "show_entity_picture": false,
+                      "vertical": true,
+                      "features_position": "bottom"
+                    },
+                    {
+                      "type": "markdown",
+                      "content": "{% set e = 'sensor.smart_wastebin_bin_01_service_recommendation' %}\n{% set status = states(e) %}\n{% set action = state_attr(e, 'action') %}\n{% if status == 'Urgent' %}\n## 🔴 {{ status }}\n{% elif status == 'Unexpected' %}\n## 🟠 {{ status }}\n{% elif status == 'Heads-up' %}\n## 🟡 {{ status }}\n{% elif status == 'OK' %}\n## 🟢 {{ status }}\n{% else %}\n## ⚪ No recommendation\n{% endif %}\n\n**{{ action if action else '—' }}**"
+                    },
+                    {
+                      "type": "entity",
+                      "entity": "sensor.smart_wastebin_bin_01_bin_usage_intensity",
+                      "name": "Usage",
+                      "attribute": "usage_level",
+                      "state_color": false
+                    },
+                    {
+                      "type": "gauge",
+                      "entity": "counter.motion_count",
+                      "severity": {
+                        "green": 0,
+                        "yellow": 50,
+                        "red": 100
+                      },
+                      "max": 120,
+                      "needle": false
+                    }
+                  ],
+                  "grid_options": {
+                    "rows": "auto",
+                    "columns": 16
+                  },
+                  "title": "Cafeteria"
+                },
+                {
+                  "type": "vertical-stack",
+                  "cards": [
+                    {
+                      "type": "tile",
+                      "entity": "binary_sensor.pir_sensor_pir_02_pir_motion_sensor",
+                      "name": "Hallway Bin",
+                      "show_entity_picture": false,
+                      "vertical": true,
+                      "features_position": "bottom"
+                    },
+                    {
+                      "type": "markdown",
+                      "content": "{% set e = 'sensor.smart_wastebin_bin_02_service_recommendation' %}\n{% set status = states(e) %}\n{% set action = state_attr(e, 'action') %}\n{% if status == 'Urgent' %}\n## 🔴 {{ status }}\n{% elif status == 'Unexpected' %}\n## 🟠 {{ status }}\n{% elif status == 'Heads-up' %}\n## 🟡 {{ status }}\n{% elif status == 'OK' %}\n## 🟢 {{ status }}\n{% else %}\n## ⚪ No recommendation\n{% endif %}\n\n**{{ action if action else '—' }}**"
+                    },
+                    {
+                      "type": "entity",
+                      "entity": "sensor.smart_wastebin_bin_02_bin_usage_intensity",
+                      "name": "Usage",
+                      "attribute": "usage_level",
+                      "state_color": false
+                    },
+                    {
+                      "type": "gauge",
+                      "entity": "counter.hallway_motion_count",
+                      "severity": {
+                        "green": 0,
+                        "yellow": 50,
+                        "red": 100
+                      },
+                      "max": 120
+                    }
+                  ],
+                  "grid_options": {
+                    "rows": "auto",
+                    "columns": 16
+                  },
+                  "title": "Hallway"
+                },
+                {
+                  "type": "vertical-stack",
+                  "cards": [
+                    {
+                      "type": "tile",
+                      "entity": "binary_sensor.pir_sensor_pir_03_pir_motion_sensor",
+                      "name": "Lab Room Bin",
+                      "show_entity_picture": false,
+                      "vertical": true,
+                      "features_position": "bottom"
+                    },
+                    {
+                      "type": "markdown",
+                      "content": "{% set e = 'sensor.smart_wastebin_bin_03_service_recommendation' %}\n{% set status = states(e) %}\n{% set action = state_attr(e, 'action') %}\n{% if status == 'Urgent' %}\n## 🔴 {{ status }}\n{% elif status == 'Unexpected' %}\n## 🟠 {{ status }}\n{% elif status == 'Heads-up' %}\n## 🟡 {{ status }}\n{% elif status == 'OK' %}\n## 🟢 {{ status }}\n{% else %}\n## ⚪ No recommendation\n{% endif %}\n\n**{{ action if action else '—' }}**"
+                    },
+                    {
+                      "type": "entity",
+                      "entity": "sensor.smart_wastebin_bin_03_bin_usage_intensity",
+                      "name": "Usage",
+                      "attribute": "usage_level",
+                      "state_color": false
+                    },
+                    {
+                      "type": "gauge",
+                      "entity": "counter.lab_room_motion_count",
+                      "max": 120,
+                      "severity": {
+                        "green": 0,
+                        "yellow": 50,
+                        "red": 120
+                      }
+                    }
+                  ],
+                  "grid_options": {
+                    "rows": "auto",
+                    "columns": 16
+                  },
+                  "title": "Lab Room"
+                }
+              ],
+              "column_span": 4,
+              "background": {
+                "color": "cyan",
+                "opacity": 50
+              }
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Sensor Health",
+                  "heading_style": "title"
+                },
+                {
+                  "type": "entity",
+                  "entity": "binary_sensor.pir_sensor_pir_01_pir_motion_sensor",
+                  "name": "Cafeteria sensor OFFLINE",
+                  "grid_options": {
+                    "columns": 9,
+                    "rows": "auto"
+                  },
+                  "icon": "mdi:alert",
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "binary_sensor.pir_sensor_pir_01_pir_motion_sensor",
+                      "state": "unavailable"
+                    }
+                  ]
+                },
+                {
+                  "type": "entity",
+                  "entity": "binary_sensor.pir_sensor_pir_02_pir_motion_sensor",
+                  "name": "Hallway sensor OFFLINE",
+                  "grid_options": {
+                    "columns": 9,
+                    "rows": "auto"
+                  },
+                  "icon": "mdi:alert",
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "binary_sensor.pir_sensor_pir_02_pir_motion_sensor",
+                      "state": "unavailable"
+                    }
+                  ]
+                },
+                {
+                  "type": "entity",
+                  "entity": "binary_sensor.pir_sensor_pir_03_pir_motion_sensor",
+                  "name": "Lab Room sensor OFFLINE",
+                  "grid_options": {
+                    "columns": 9,
+                    "rows": "auto"
+                  },
+                  "icon": "mdi:alert",
+                  "visibility": [
+                    {
+                      "condition": "state",
+                      "entity": "binary_sensor.pir_sensor_pir_03_pir_motion_sensor",
+                      "state": "unavailable"
+                    }
+                  ]
+                }
+              ],
+              "column_span": 3
+            }
+          ],
+          "header": {
+            "card": {
+              "type": "markdown",
+              "content": "## 🗑️ Smart Wastebin System\n\n**Bins active:** 3 &nbsp;&nbsp;|&nbsp;&nbsp; **Sensors online:** {{\n  [states('binary_sensor.pir_sensor_pir_01_pir_motion_sensor'),\n   states('binary_sensor.pir_sensor_pir_02_pir_motion_sensor'),\n   states('binary_sensor.pir_sensor_pir_03_pir_motion_sensor')]\n  | select('ne', 'unavailable') | list | count }} / 3\n\n{% set offline = [\n  states('binary_sensor.pir_sensor_pir_01_pir_motion_sensor'),\n  states('binary_sensor.pir_sensor_pir_02_pir_motion_sensor'),\n  states('binary_sensor.pir_sensor_pir_03_pir_motion_sensor')]\n  | select('eq', 'unavailable') | list | count %}\n{% if offline > 0 %}\n🔴 **{{ offline }} sensor(s) offline — needs attention**\n{% else %}\n🟢 All sensors reporting\n{% endif %}\n",
+              "text_only": true
+            }
+          },
+          "badges": []
+        }
+      ]
+    }
+  }
+}

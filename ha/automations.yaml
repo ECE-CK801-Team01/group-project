@@ -1,0 +1,101 @@
+- id: '1777924376458'
+  alias: Count Motion Events - Cafeteria
+  description: ''
+  triggers:
+  - trigger: mqtt
+    options:
+      topic: homeassistant/binary_sensor/pir-01/events
+      payload: detected
+  conditions: []
+  actions:
+  - action: counter.increment
+    metadata: {}
+    target:
+      entity_id: counter.motion_count
+    data: {}
+  mode: single
+- id: '1777925324404'
+  alias: Motion Alert
+  description: ''
+  triggers:
+  - type: motion
+    device_id: 597cbce070d4445f85a6a4a74ec1d54d
+    entity_id: a603eca1a0efa1ede3749a3d72db8610
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: persistent_notification.create
+    metadata: {}
+    data:
+      message: Motion detected at Smart Wastebin 01 — {{ now().strftime('%H:%M:%S')
+        }}
+      title: Wastebin Alert
+  mode: single
+- id: '1777925960390'
+  alias: High activity notifier
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - counter.motion_count
+    above: 10
+  conditions: []
+  actions:
+  - action: persistent_notification.create
+    metadata: {}
+    data:
+      message: Wastebin is exceeding 75% of capacity
+      title: High Activity Alert
+  mode: single
+- id: '1779949425582'
+  alias: Count Motion Events - Hallway
+  description: Increment Hallway counter on each bin-02 motion detection
+  triggers:
+  - trigger: mqtt
+    options:
+      topic: homeassistant/binary_sensor/pir-02/events
+      payload: detected
+  conditions: []
+  actions:
+  - action: counter.increment
+    target:
+      entity_id: counter.hallway_motion_count
+  mode: single
+- id: '1779949445525'
+  alias: Count Motion Events - Lab Room
+  description: Increment Lab Room counter on each bin-03 motion detection
+  triggers:
+  - trigger: mqtt
+    options:
+      topic: homeassistant/binary_sensor/pir-03/events
+      payload: detected
+  conditions: []
+  actions:
+  - action: counter.increment
+    target:
+      entity_id: counter.lab_room_motion_count
+  mode: single
+- id: '1780040190322'
+  alias: Reset daily motion counters
+  description: Reset Smart Wastebin motion counters every day at midnight
+  triggers:
+  - trigger: time
+    at: 00:00:00
+    weekday:
+    - sun
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+  conditions: []
+  actions:
+  - action: counter.reset
+    target:
+      entity_id:
+      - counter.motion_count
+      - counter.hallway_motion_count
+      - counter.lab_room_motion_count
+  mode: single
