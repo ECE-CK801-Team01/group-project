@@ -132,18 +132,11 @@ In case you don't have an edge device or the necessary sensor you can run mock e
 ```bash
 docker compose -f docker-compose.edge.yml up -d --build
 ```
+For each part of the system:
 
-
-
-To run without GPIO hardware (no PIR sensor connected):
-```bash
-docker compose up broker consumer
-```
- 
 View live output:
 ```bash
-docker compose logs -f consumer
-docker compose logs -f producer
+docker compose logs
 ```
  
 Stop everything:
